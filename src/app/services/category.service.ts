@@ -6,7 +6,7 @@ import { Category } from '../models/category';
 @Injectable({
   providedIn: 'root'
 })
-export class CategoryServiceService {
+export class CategoryService {
   private apiUrl = `${environment.apiUrl}/categories`;
 
   constructor(private http: HttpClient) { }
@@ -21,6 +21,14 @@ export class CategoryServiceService {
     } else {
       return this.http.put(`${this.apiUrl}/${category.id}`, category);
     }
+  }
+
+  createCategory(category: Category) {
+    return this.http.post(this.apiUrl, category);
+  }
+
+  updateCategory(category: Category) {
+    return this.http.put(`${this.apiUrl}/${category.id}`, category);
   }
 
   deleteCategory(id: number) {

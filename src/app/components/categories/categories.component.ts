@@ -1,7 +1,7 @@
 import { NotificationService } from './../../services/notificatio.service';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { CategoryServiceService } from '../../services/category-service.service';
+import { CategoryService } from '../../services/category.service';
 import { CommonModule } from '@angular/common';
 import { Category, createNewCategory } from '../../models/category';
 import { Subscription } from 'rxjs';
@@ -9,17 +9,17 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-categories',
   templateUrl: './categories.component.html',
-  imports: [ReactiveFormsModule,CommonModule],
+  imports: [ReactiveFormsModule, CommonModule],
   styleUrls: ['./categories.component.css']
 })
-export class CategoriesComponent implements OnInit,OnDestroy {
+export class CategoriesComponent implements OnInit, OnDestroy {
   categories: Category[] = [];
   categoryForm: FormGroup;
   isEditing = false;
   notifications: { type: string, message: string }[] = [];
   private subscription!: Subscription;
 
-  constructor(private fb: FormBuilder, private categoryService: CategoryServiceService,private notificationService:NotificationService) {
+  constructor(private fb: FormBuilder, private categoryService: CategoryService, private notificationService: NotificationService) {
     this.categoryForm = this.fb.group({
       id: [0],
       name: ['', [Validators.required]],
@@ -49,17 +49,33 @@ export class CategoriesComponent implements OnInit,OnDestroy {
   }
 
   saveCategory() {
-    if (this.categoryForm.valid) {
-      const category = this.categoryForm.value;
-      this.categoryService.createOrUpdateCategory(category).subscribe({
+    const category = this.categoryForm.value;
+    if (category.id === 0) {
+      this.categoryService.createCategory(category).subscribe({
         next: res => {
-          this.notificationService.success('Category saved successfully!');
-          this.resetForm();
-          this.loadCategories();
+          this.notificationService.success('Category Created successfully!');
+        },
+        error: err => this.notificationService.error('Data not saved')
+      });
+    } else {
+      this.categoryService.updateCategory(category).subscribe({
+        next: res => {
+          this.notificationService.success('Category updated successfully!');
         },
         error: err => this.notificationService.error('Data not saved')
       });
     }
+
+    this.resetForm();
+    this.loadCategories();
+    /*this.categoryService.createOrUpdateCategory(category).subscribe({
+      next: res => {
+        this.notificationService.success('Category saved successfully!');
+        this.resetForm();
+        this.loadCategories();
+      },
+      error: err => this.notificationService.error('Data not saved')
+    });*/
   }
 
   editCategory(category: Category) {

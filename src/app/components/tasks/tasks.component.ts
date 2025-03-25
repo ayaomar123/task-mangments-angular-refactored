@@ -1,7 +1,7 @@
 import { NotificationService } from './../../services/notificatio.service';
 import { Component, OnInit } from '@angular/core';
 import { TaskService } from '../../services/task.service';
-import { CategoryServiceService } from '../../services/category-service.service';
+import { CategoryService } from '../../services/category.service';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { createNewTask, Task } from '../../models/tasks';
 import { Category } from '../../models/category';
@@ -32,7 +32,7 @@ export class TasksComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private taskService: TaskService,
-    private categoryService: CategoryServiceService,
+    private categoryService: CategoryService,
     private notificationService: NotificationService
   ) {
     this.tasksForm = this.fb.group({
@@ -88,23 +88,21 @@ export class TasksComponent implements OnInit {
   }
 
   saveTask() {
-    if (this.tasksForm.valid) {
-      const task: Task = this.tasksForm.value;
-      if (task.id === 0) {
-        this.taskService.createNewTask(task).subscribe(() => {
-          this.tasksForm.reset(createNewTask());
-          this.notificationService.success('Task Created successfully')
-        });
-      } else {
+    const task: Task = this.tasksForm.value;
+    if (task.id === 0) {
+      this.taskService.createNewTask(task).subscribe(() => {
+        this.tasksForm.reset(createNewTask());
+        this.notificationService.success('Task Created successfully')
+      });
+    } else {
+      debugger;
+      this.taskService.updateTask(task).subscribe(() => {
+        this.tasksForm.reset(createNewTask());
         debugger;
-        this.taskService.updateTask(task).subscribe(() => {
-          this.tasksForm.reset(createNewTask());
-        debugger;
-          this.notificationService.success('Task Updated successfully')
-        });
-      }
-      this.loadTasks();
+        this.notificationService.success('Task Updated successfully')
+      });
     }
+    this.loadTasks();
   }
 
   onEdit(task: Task) {
