@@ -26,7 +26,7 @@ export class LoginComponent {
     });
   }
 
-  onLogin() {
+  login() {
     const credentials = this.loginForm.value;
     this.authService.login(credentials).subscribe({
       next: () => {
