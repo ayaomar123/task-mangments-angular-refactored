@@ -1,0 +1,148 @@
+<div class="container">
+  <div class="row mb-2">
+    <div *ngFor="let notification of notifications" [ngClass]="{'alert-success': notification.type === 'success', 'alert-error': notification.type === 'error'}" class="alert">
+      {{ notification.message }}
+    </div>
+  </div>
+<div class="row mb-4">
+    <div class="col-md-3">
+      <label>Filter by Category</label>
+      <select class="form-select" [(ngModel)]="selectedCategoryId" (change)="onFilterChange()">
+        <option [ngValue]="null">All Categories</option>
+        <option *ngFor="let category of categories" [value]="category.id">{{ category.name }}</option>
+      </select>
+    </div>
+  
+    <div class="col-md-3">
+      <label>Filter by Status</label>
+      <select class="form-select" [(ngModel)]="selectedStatus" (change)="onFilterChange()">
+        <option [ngValue]="null">All</option>
+        <option [ngValue]="true">Completed</option>
+        <option [ngValue]="false">Incomplete</option>
+      </select>
+    </div>
+  
+    <div class="col-md-3">
+      <label>Filter by Due Date</label>
+      <input type="date" class="form-control" [(ngModel)]="selectedDueDate" (change)="onFilterChange()" />
+    </div>
+  
+    <div class="col-md-3 d-flex align-items-end">
+      <button class="btn btn-secondary w-100" (click)="resetFilters()">Reset Filters</button>
+    </div>
+  </div>
+  
+    <div class="row">
+      <div class="col-md-9">
+        <div class="card">
+          <div class="card-header">Task List</div>
+          <div class="card-body p-0">
+            <table class="table table-bordered table-responsive mb-0">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Category</th>
+                  <th>Title</th>
+                  <th>Description</th>
+                  <th>Status</th>
+                  <th>Priority</th>
+                  <th>Due Date</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let task of tasks; let i = index">
+                  <td>{{ i + 1 }}</td>
+                  <td>{{ task.category?.name }}</td>
+                  <td>{{ task.title }}</td>
+                  <td>{{ task.description }}</td>
+                  <td>{{ task.status | status }}</td>
+                  <td>
+                    {{ task.priority | pirority }}
+                  </td>
+                  <td>{{ task.dueDate | date: 'yyyy-MM-dd' }}</td>
+                  <td>
+                    <button class="btn btn-sm btn-primary me-1" (click)="onEdit(task)">Edit</button>
+                    <button class="btn btn-sm btn-danger" (click)="deleteTask(task.id)">Delete</button>
+                  </td>
+                </tr>
+                <tr *ngIf="tasks.length === 0">
+                  <td colspan="8" class="text-center">No tasks found.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <form [formGroup]="tasksForm" (ngSubmit)="saveTask()">
+          <div class="card">
+            <div class="card-header">
+              {{ tasksForm.get('id')?.value === 0 ? 'Create New Task' : 'Update Task' }}
+            </div>
+            <div class="card-body">
+              <div class="form-group mb-2">
+                <label>Category:</label>
+                <select formControlName="categoryId" class="form-control">
+                  <option value="" disabled selected>Select a category</option>
+                  <option *ngFor="let category of categories" [value]="category.id">{{ category.name }}</option>
+                </select>
+                <small class="text-danger" *ngIf="tasksForm.get('categoryId')?.touched && tasksForm.get('categoryId')?.invalid">
+                  Category is required.
+                </small>
+              </div>
+  
+              <div class="form-group mb-2">
+                <label>Title:</label>
+                <input placeholder="Title*" type="text" formControlName="title" class="form-control" />
+                <small class="text-danger" *ngIf="tasksForm.get('title')?.touched && tasksForm.get('title')?.invalid">
+                  Title is required.
+                </small>
+              </div>
+  
+              <div class="form-group mb-2">
+                <label>Description:</label>
+                <textarea placeholder="Description*" formControlName="description" class="form-control" rows="3"></textarea>
+                <small class="text-danger" *ngIf="tasksForm.get('description')?.touched && tasksForm.get('description')?.invalid">
+                  Description is required.
+                </small>
+              </div>
+  
+              <div class="form-group mb-2">
+                <label>Status:</label>
+                <select formControlName="status" class="form-control">
+                  <option [value]="true">Completed</option>
+                  <option [value]="false">Incomplete</option>
+                </select>
+              </div>
+  
+              <div class="form-group mb-2">
+                <label>Priority:</label>
+                <select formControlName="priority" class="form-control">
+                  <option [value]="1">Low</option>
+                  <option [value]="2">Medium</option>
+                  <option [value]="3">High</option>
+                </select>
+              </div>
+  
+              <!-- Due Date -->
+              <div class="form-group mb-2">
+                <label>Due Date:</label>
+                <input type="date" formControlName="dueDate" class="form-control" />
+                <small class="text-danger" *ngIf="tasksForm.get('dueDate')?.touched && tasksForm.get('dueDate')?.invalid">
+                  Due date is required.
+                </small>
+              </div>
+            </div>
+            <div class="card-footer">
+              <button type="submit" class="btn btn-success" [disabled]="tasksForm.invalid">
+                {{ tasksForm.get('id')?.value === 0 ? 'Save' : 'Update' }}
+              </button>
+              <button type="button" class="btn btn-secondary mx-2" (click)="resetForm()">Reset</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  

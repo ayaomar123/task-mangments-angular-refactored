@@ -1,0 +1,57 @@
+<div class="container">
+  <div class="row">
+    <div *ngFor="let notification of notifications" [ngClass]="{'alert-success': notification.type === 'success', 'alert-error': notification.type === 'error'}" class="alert">
+      {{ notification.message }}
+    </div>
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header">Categories</div>
+        <div class="card-body">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let category of categories; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{ category.name }}</td>
+                <td>{{ category.description }}</td>
+                <td>
+                  <button class="btn btn-success" (click)="editCategory(category)">Edit</button>
+                  <button class="btn btn-danger mx-2" (click)="deleteCategory(category.id)">Delete</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-header">{{ isEditing ? 'Edit' : 'Create' }} Category</div>
+        <div class="card-body">
+          <form [formGroup]="categoryForm" (ngSubmit)="saveCategory()">
+            <div class="mb-3">
+              <label for="name" class="form-label">Name</label>
+              <input type="text" class="form-control" id="name" formControlName="name" required>
+            </div>
+            <div class="mb-3">
+              <label for="description" class="form-label">Description</label>
+              <input type="text" class="form-control" id="description" formControlName="description" required>
+            </div>
+            <div class="card-footer">
+              <button type="submit" class="btn btn-primary" [disabled]="categoryForm.invalid">{{ isEditing ? 'Update' :
+                'Save' }}</button>
+              <button type="button" class="btn btn-secondary mx-2" (click)="resetForm()">Reset</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
